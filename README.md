@@ -1,4 +1,4 @@
-# Welcome to your Expo app 👋
+# Welcome to our To Do List App 👋
 
 Link to our Google Drive Screenshots and ScreenRecordings:
 https://drive.google.com/drive/folders/1PCCBOYmwnq_bmP2rImYHoh1stGEA4OsX?usp=sharing
