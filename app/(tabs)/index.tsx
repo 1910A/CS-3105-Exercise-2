@@ -6,8 +6,10 @@ import React, { useState } from "react";
 import Checkbox from 'expo-checkbox';
 import ParallaxScrollView from '@/components/ParallaxScrollView';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import { v4 as uuidv4 } from 'uuid'; // For generating unique IDs
 
 interface IToDo {
+  id: string;
   text: string;
   completed: boolean;
 }
@@ -28,7 +30,7 @@ export default function HomeScreen() {
     if (value.trim()) {
       setToDoLists({
         ...toDoLists,
-        [selectedList]: [...toDoLists[selectedList], { text: value, completed: false }],
+        [selectedList]: [...toDoLists[selectedList], { id: uuidv4(), text: value, completed: false }],
       });
       setValue("");
     } else {
@@ -36,15 +38,15 @@ export default function HomeScreen() {
     }
   };
 
-  const removeItem = (index: number): void => {
-    const updatedList = [...toDoLists[selectedList]];
-    updatedList.splice(index, 1);
+  const removeItem = (id: string): void => {
+    const updatedList = toDoLists[selectedList].filter(task => task.id !== id);
     setToDoLists({ ...toDoLists, [selectedList]: updatedList });
   };
 
-  const toggleComplete = (index: number): void => {
-    const updatedList = [...toDoLists[selectedList]];
-    updatedList[index].completed = !updatedList[index].completed;
+  const toggleComplete = (id: string): void => {
+    const updatedList = toDoLists[selectedList].map(task => 
+      task.id === id ? { ...task, completed: !task.completed } : task
+    );
     setToDoLists({ ...toDoLists, [selectedList]: updatedList });
   };
 
@@ -136,7 +138,6 @@ export default function HomeScreen() {
         {/* Input to Add Task */}
         <View style={styles.inputWrapper}>
           <TextInput
-            /*placeholder={`What do you want to do in ${selectedList}?`}*/
             placeholder={`What do you want to do?`}
             value={value}
             onChangeText={e => {
@@ -165,12 +166,12 @@ export default function HomeScreen() {
 
         {incompleteTasks.length === 0 && <Text>Relax. You have nothing to do yet.</Text>}
 
-        {incompleteTasks.map((toDo: IToDo, index: number) => (
-          <View style={styles.listItem} key={`${index}_${toDo.text}`}>
+        {incompleteTasks.map((toDo: IToDo) => (
+          <View style={styles.listItem} key={toDo.id}>
             <Checkbox
               style={styles.checkbox}
               value={toDo.completed}
-              onValueChange={() => toggleComplete(toDoLists[selectedList].indexOf(toDo))}
+              onValueChange={() => toggleComplete(toDo.id)}
             />
             <Text
               style={[
@@ -182,7 +183,7 @@ export default function HomeScreen() {
             </Text>
             <TouchableOpacity
               style={styles.deleteTaskButton}
-              onPress={() => removeItem(index)}
+              onPress={() => removeItem(toDo.id)}
             >
               <Icon name="trash" size={20} color="#da4e4e" />
             </TouchableOpacity>
@@ -192,12 +193,12 @@ export default function HomeScreen() {
         {completedTasks.length > 0 && (
           <>
             <Text style={styles.accomplishedSubtitle}>Accomplished Tasks :</Text>
-            {completedTasks.map((toDo: IToDo, index: number) => (
-              <View style={styles.listItem} key={`${index}_${toDo.text}`}>
+            {completedTasks.map((toDo: IToDo) => (
+              <View style={styles.listItem} key={toDo.id}>
                 <Checkbox
                   style={styles.checkbox}
                   value={toDo.completed}
-                  onValueChange={() => toggleComplete(toDoLists[selectedList].indexOf(toDo))}
+                  onValueChange={() => toggleComplete(toDo.id)}
                 />
                 <Text
                   style={[
@@ -209,7 +210,7 @@ export default function HomeScreen() {
                 </Text>
                 <TouchableOpacity
                   style={styles.deleteTaskButton}
-                  onPress={() => removeItem(toDoLists[selectedList].indexOf(toDo))}
+                  onPress={() => removeItem(toDo.id)}
                 >
                   <Icon name="trash" size={20} color="#da4e4e" />
                 </TouchableOpacity>
@@ -221,6 +222,7 @@ export default function HomeScreen() {
     </View>
   );
 }
+
 
 const styles = StyleSheet.create({
   pageBackground: {
