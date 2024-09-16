@@ -17,10 +17,12 @@ export default function HomeScreen() {
   const [error, showError] = useState<Boolean>(false);
 
   const handleSubmit = (): void => {
-    if (value.trim())
+    if (value.trim()){
       setToDos([...toDoList, { text: value, completed: false }]);
-    else showError(true);
-    setValue("");
+      setValue("");
+    }else{
+      showError(true);
+    }
   };
 
   const removeItem = (index: number): void => {
@@ -34,6 +36,9 @@ export default function HomeScreen() {
     newToDoList[index].completed = !newToDoList[index].completed;
     setToDos(newToDoList);
   };
+
+  const incompleteTasks = toDoList.filter(task => !task.completed);
+  const completedTask = toDoList.filter(task => task.completed);
 
   return (
     <View style={styles.pageBackground}>
@@ -71,8 +76,36 @@ export default function HomeScreen() {
           <Text style={styles.error}>Error: Input field is empty...</Text>
         )}
         <Text style={styles.subtitle}>Your Tasks :</Text>
-        {toDoList.length === 0 && <Text>No to do task available</Text>}
-        {toDoList.map((toDo: IToDo, index: number) => (
+
+        {incompleteTasks.length === 0 && <Text>No to do task available</Text>}
+
+        {incompleteTasks.map((toDo: IToDo, index: number) =>(
+          <View style={styles.listItem} key={`${index}_${toDo.text}`}>
+            <Checkbox
+              style={styles.checkbox}
+              value={toDo.completed}
+              onValueChange={() => toggleComplete(toDoList.indexOf(toDo))}
+            />
+            <Text
+              style={[
+                styles.task,
+                {textDecorationLine: toDo.completed? "line-through" : "none"}
+              ]}
+            >
+              {toDo.text}
+
+                </Text>
+                <Button
+              title="Delete"
+              onPress={() => removeItem(index)}
+              color="#da4e4e"
+            />
+          </View>
+        ))}
+
+
+        {/* {toDoList.length === 0 && <Text>No to do task available</Text>} */}
+        {/* {toDoList.map((toDo: IToDo, index: number) => (
           <View style={styles.listItem} key={`${index}_${toDo.text}`}>
             <Checkbox
               style={styles.checkbox}
@@ -93,7 +126,38 @@ export default function HomeScreen() {
               color="crimson"
             />
           </View>
-        ))}
+        ))} */}
+
+      {completedTask.length > 0 &&(
+        <>
+          <Text style={styles.accomplishedSubtitle}>Accomplished Task :</Text>
+          {completedTask.map((toDo: IToDo, index: number) =>(
+            <View style = {styles.listItem} key={`${index}_${toDo.text}`}>
+              <Checkbox
+                style={styles.checkbox}
+                value={toDo.completed}
+                onValueChange={() => toggleComplete(toDoList.indexOf(toDo))}
+              />
+              <Text
+                style={[
+                  styles.task,
+                  styles.completedTask
+                ]}
+              >
+                {toDo.text}
+              </Text>
+            <Button
+              title="Delete"
+              onPress={() => removeItem(toDoList.indexOf(toDo))}
+              color="#da4e4e"
+              />
+            </View>
+          ))}
+          </>
+      )}
+
+
+
       </ParallaxScrollView>
     </View>
   );
@@ -113,6 +177,7 @@ const styles = StyleSheet.create({
     height: 200,
     width: 200,
     bottom: 0,
+    top: 70,
     left: 0,
     position: 'absolute',
   },
@@ -124,7 +189,7 @@ const styles = StyleSheet.create({
   },
   inputBox: {
     width: 200,
-    borderColor: "purple",
+    borderColor: "#800020",
     borderRadius: 8,
     borderWidth: 2,
     paddingLeft: 8
@@ -138,7 +203,15 @@ const styles = StyleSheet.create({
   subtitle: {
     fontSize: 20,
     marginBottom: 20,
-    color: "purple"
+    color: "purple",
+    fontWeight: "bold"
+  },
+  accomplishedSubtitle: {
+    top:15,
+    fontSize: 20,
+    marginBottom: 20,
+    color: "green",
+    fontWeight: "bold"
   },
   listItem: {
     flexDirection: "row",
@@ -152,6 +225,10 @@ const styles = StyleSheet.create({
   task: {
     width: 200,
     marginLeft: 10,
+  },
+  completedTask: {
+    color: "gray",
+    textDecorationLine: "line-through",
   },
   error: {
     color: "red"
