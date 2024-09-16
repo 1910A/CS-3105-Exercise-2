@@ -135,6 +135,8 @@ export default function HomeScreen() {
           />
         </View>
 
+        {/*<View style={styles.divider} />*/}
+
         {/* Input to Add Task */}
         <View style={styles.inputWrapper}>
           <TextInput
@@ -148,7 +150,18 @@ export default function HomeScreen() {
             style={styles.inputBox}
           />
           
-          <TouchableOpacity
+          
+        </View>
+
+        {error && (
+          <Text style={styles.error}>Error: Input field is empty...</Text>
+        )}
+
+
+
+        <Text style={styles.subtitle}>Your Tasks:</Text>
+
+        <TouchableOpacity
             style={styles.allButton}
             onPress={toggleSelectAll}
           >
@@ -156,13 +169,6 @@ export default function HomeScreen() {
               {selectAll ? "Deselect All" : "Select All"}
             </Text>
           </TouchableOpacity>
-        </View>
-
-        {error && (
-          <Text style={styles.error}>Error: Input field is empty...</Text>
-        )}
-
-        <Text style={styles.subtitle}>Your Tasks:</Text>
 
         {incompleteTasks.length === 0 && <Text>Relax. You have nothing to do yet.</Text>}
 
@@ -250,7 +256,7 @@ const styles = StyleSheet.create({
     height: 40
   },
   inputBox: {
-    width: 200,
+    width: "100%",
     borderColor: "#800020",
     borderRadius: 8,
     borderWidth: 2,
@@ -259,7 +265,7 @@ const styles = StyleSheet.create({
   navBar: {
     flexDirection: 'row',
     marginVertical: 10,
-    height: 50, // Fixed height to enable scrolling
+    height: 50, 
   },
   navBarItem: {
     flexDirection: 'row',
@@ -283,7 +289,7 @@ const styles = StyleSheet.create({
     marginLeft: 10,
   },
   deleteTaskButton: {
-    marginLeft: 10,
+    marginLeft: 'auto'
   },
   title: {
     fontSize: 40,
@@ -293,8 +299,7 @@ const styles = StyleSheet.create({
   },
   subtitle: {
     fontSize: 20,
-    marginBottom: 20,
-    color: "purple",
+    color: "maroon",
     fontWeight: "bold"
   },
   accomplishedSubtitle: {
@@ -308,7 +313,10 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     width: "100%",
-    marginBottom: 10
+    backgroundColor: '#e6e6fa',
+    borderColor: "#800020",
+    borderRadius: 8,
+    borderWidth: 2,
   },
   checkbox: {
     margin: 8,
@@ -325,17 +333,25 @@ const styles = StyleSheet.create({
     color: "red"
   },
   allButton: {
-    width: 90, 
-    height: 40,
-    backgroundColor: 'purple',
+    width: "100%", 
+    height: 35,
+    backgroundColor: '#9f95cc',
     paddingVertical: 6, 
     paddingHorizontal: 10,
     borderRadius: 8,
     alignItems: 'center',
     justifyContent: 'center',
+    borderColor: "maroon",
+    borderWidth: 2,
   },
   buttonText: {
     color: 'white',
     fontSize: 14, 
+  },
+  divider: {
+    height: 10,
+    width: '100%',
+    borderRadius: 5,
+    marginBottom: 20,
   },
 });
