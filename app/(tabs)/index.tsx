@@ -1,26 +1,30 @@
-import { Image, Text, TextInput, Button, StyleSheet, View } from 'react-native';
-import React, { useState } from "react";
-import Checkbox from 'expo-checkbox';
+import { Image, Text, TextInput, Button, StyleSheet, View, TouchableOpacity } from 'react-native';
 import { HelloWave } from '@/components/HelloWave';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
+
+import React, { useState } from "react";
+import Checkbox from 'expo-checkbox';
+import ParallaxScrollView from '@/components/ParallaxScrollView';
 
 interface IToDo {
   text: string;
   completed: boolean;
 }
 
+
+
 export default function HomeScreen() {
   const [value, setValue] = useState<string>("");
   const [toDoList, setToDos] = useState<IToDo[]>([]);
   const [error, showError] = useState<Boolean>(false);
+  const [selectAll, setSelectAll] = useState<boolean>(false);
 
   const handleSubmit = (): void => {
-    if (value.trim()){
+    if (value.trim()) {
       setToDos([...toDoList, { text: value, completed: false }]);
       setValue("");
-    }else{
+    } else {
       showError(true);
     }
   };
@@ -35,6 +39,15 @@ export default function HomeScreen() {
     const newToDoList = [...toDoList];
     newToDoList[index].completed = !newToDoList[index].completed;
     setToDos(newToDoList);
+  };
+
+  const toggleSelectAll = (): void => {
+    const updatedList = toDoList.map(task => ({
+      ...task,
+      completed: !selectAll,
+    }));
+    setToDos(updatedList);
+    setSelectAll(!selectAll);
   };
 
   const incompleteTasks = toDoList.filter(task => !task.completed);
@@ -57,7 +70,7 @@ export default function HomeScreen() {
 
         <View style={styles.inputWrapper}>
           <TextInput
-            placeholder="Enter your todo task..."
+            placeholder="What do you want to do?"
             value={value}
             onChangeText={e => {
               setValue(e);
@@ -65,52 +78,38 @@ export default function HomeScreen() {
             }}
             style={styles.inputBox}
           />
-          <Button
-            title="Add Task"
+
+          <TouchableOpacity
+            style={styles.smallButton}
             onPress={handleSubmit}
-            color="#800020"
-          />
+          >
+          <Text style={styles.buttonText}>Add Task</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.allButton}
+            onPress={toggleSelectAll}
+          >
+            <Text style={styles.buttonText}>
+              {selectAll ? "Deselect All" : "Select All"}
+            </Text>
+          </TouchableOpacity>
         </View>
 
         {error && (
           <Text style={styles.error}>Error: Input field is empty...</Text>
         )}
+
         <Text style={styles.subtitle}>Your Tasks :</Text>
 
-        {incompleteTasks.length === 0 && <Text>No to do task available</Text>}
+        {incompleteTasks.length === 0 && <Text>Relax. You have nothing to do yet. </Text>}
 
-        {incompleteTasks.map((toDo: IToDo, index: number) =>(
+        {incompleteTasks.map((toDo: IToDo, index: number) => (
           <View style={styles.listItem} key={`${index}_${toDo.text}`}>
             <Checkbox
               style={styles.checkbox}
               value={toDo.completed}
               onValueChange={() => toggleComplete(toDoList.indexOf(toDo))}
-            />
-            <Text
-              style={[
-                styles.task,
-                {textDecorationLine: toDo.completed? "line-through" : "none"}
-              ]}
-            >
-              {toDo.text}
-
-                </Text>
-                <Button
-              title="Delete"
-              onPress={() => removeItem(index)}
-              color="#da4e4e"
-            />
-          </View>
-        ))}
-
-
-        {/* {toDoList.length === 0 && <Text>No to do task available</Text>} */}
-        {/* {toDoList.map((toDo: IToDo, index: number) => (
-          <View style={styles.listItem} key={`${index}_${toDo.text}`}>
-            <Checkbox
-              style={styles.checkbox}
-              value={toDo.completed}
-              onValueChange={() => toggleComplete(index)}
             />
             <Text
               style={[
@@ -123,45 +122,43 @@ export default function HomeScreen() {
             <Button
               title="Delete"
               onPress={() => removeItem(index)}
-              color="crimson"
+              color="#da4e4e"
             />
           </View>
-        ))} */}
+        ))}
 
-      {completedTask.length > 0 &&(
-        <>
-          <Text style={styles.accomplishedSubtitle}>Accomplished Task :</Text>
-          {completedTask.map((toDo: IToDo, index: number) =>(
-            <View style = {styles.listItem} key={`${index}_${toDo.text}`}>
-              <Checkbox
-                style={styles.checkbox}
-                value={toDo.completed}
-                onValueChange={() => toggleComplete(toDoList.indexOf(toDo))}
-              />
-              <Text
-                style={[
-                  styles.task,
-                  styles.completedTask
-                ]}
-              >
-                {toDo.text}
-              </Text>
-            <Button
-              title="Delete"
-              onPress={() => removeItem(toDoList.indexOf(toDo))}
-              color="#da4e4e"
-              />
-            </View>
-          ))}
+        {completedTask.length > 0 && (
+          <>
+            <Text style={styles.accomplishedSubtitle}>Accomplished Task :</Text>
+            {completedTask.map((toDo: IToDo, index: number) => (
+              <View style={styles.listItem} key={`${index}_${toDo.text}`}>
+                <Checkbox
+                  style={styles.checkbox}
+                  value={toDo.completed}
+                  onValueChange={() => toggleComplete(toDoList.indexOf(toDo))}
+                />
+                <Text
+                  style={[
+                    styles.task,
+                    styles.completedTask
+                  ]}
+                >
+                  {toDo.text}
+                </Text>
+                <Button
+                  title="Delete"
+                  onPress={() => removeItem(toDoList.indexOf(toDo))}
+                  color="#da4e4e"
+                />
+              </View>
+            ))}
           </>
-      )}
-
-
-
+        )}
       </ParallaxScrollView>
     </View>
   );
 }
+
 
 const styles = StyleSheet.create({
   pageBackground: {
@@ -232,5 +229,29 @@ const styles = StyleSheet.create({
   },
   error: {
     color: "red"
+  },
+  smallButton: {
+    width: 100, // Adjust the width to make it smaller
+    height: 40,
+    backgroundColor: '#800020',
+    paddingVertical: 6, // Adjust padding as necessary
+    paddingHorizontal: 10,
+    borderRadius: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  allButton: {
+    width: 100, // Adjust the width to make it smaller
+    height: 40,
+    backgroundColor: 'purple',
+    paddingVertical: 6, // Adjust padding as necessary
+    paddingHorizontal: 10,
+    borderRadius: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  buttonText: {
+    color: 'white',
+    fontSize: 14, // Adjust font size
   },
 });
