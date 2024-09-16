@@ -289,7 +289,8 @@ const styles = StyleSheet.create({
     marginLeft: 10,
   },
   deleteTaskButton: {
-    marginLeft: 'auto'
+    marginLeft: 'auto',
+    marginRight: 10
   },
   title: {
     fontSize: 40,
